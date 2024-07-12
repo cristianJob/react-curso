@@ -1,6 +1,6 @@
 import { useMemo } from 'react'  // usememo optimiza el componente ejecutando solo cuando hay un cambio en la segunda variable ej: cart
 
-export default function Header({ cart, removeFromCart }) {
+export default function Header({ cart, removeFromCart, increaseQuantity, decreaseQuantity, clearCardt }) {
 
     // state derivado
     const isEmpy = useMemo( () => cart.length === 0, [cart] )
@@ -52,6 +52,8 @@ export default function Header({ cart, removeFromCart }) {
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-dark"
+                                                                onClick={() => decreaseQuantity(guitar.id)}
+
                                                             >
                                                                 -
                                                             </button>
@@ -59,6 +61,8 @@ export default function Header({ cart, removeFromCart }) {
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-dark"
+                                                                onClick={() => increaseQuantity(guitar.id)}
+                                                                
                                                             >
                                                                 +
                                                             </button>
@@ -79,7 +83,7 @@ export default function Header({ cart, removeFromCart }) {
                                         </table>
                                     )}
                                     <p className="text-end">Total pagar: <span className="fw-bold">${cartTotal()}</span></p>
-                                    <button className="btn btn-dark w-100 mt-3 p-2">Vaciar Carrito</button>
+                                    <button className="btn btn-dark w-100 mt-3 p-2" onClick={clearCardt}>Vaciar Carrito</button>
 
 
 

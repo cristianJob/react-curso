@@ -5,16 +5,30 @@ import { db } from "./data/db"
 
 function App() {
 
+  const inicialCart = () => {
+    const localStorageCart = localStorage.getItem('cart')
+    return localStorageCart ? JSON.parse(localStorageCart) : []
+  }
+
   const [data, setData] = useState([]);
-  const [cart, setCard] = useState([]);
+  const [cart, setCard] = useState(inicialCart);
+
+  const MAX_ITEM = 5
+  const MIN_ITEM = 1
 
   useEffect(() => {
     setData(db)
+    localStorage.setItem('cart', JSON.stringify(cart))
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  }, [cart])
 
   function addToCard(item) {
     const itemExist = cart.findIndex(guitar => guitar.id === item.id)
     if (itemExist >= 0) {
+      if (cart[itemExist].quantity >= MAX_ITEM) return  // si exede el maximo no lo agrega
       const updateCardt = [...cart]
       updateCardt[itemExist].quantity++
       setCard(updateCardt)
@@ -22,7 +36,6 @@ function App() {
       item.quantity = 1
       setCard([...cart, item])
     }
-
   }
 
   function removeFromCart(id) {
@@ -30,11 +43,44 @@ function App() {
     setCard(prevCart => prevCart.filter(guitar => guitar.id !== id))
   }
 
+  function increaseQuantity(id) {
+    const updateCardt = cart.map(item => {
+      if (item.id === id && item.quantity < 5) {
+        return {
+          ...item,
+          quantity: item.quantity + 1
+        }
+      }
+      return item
+    })
+    setCard(updateCardt)
+  }
+
+  function decreaseQuantity(id) {
+    const updateCardt = cart.map(item => {
+      if (item.id === id && item.quantity > MIN_ITEM) {
+        return {
+          ...item,
+          quantity: item.quantity - 1
+        }
+      }
+      return item
+    })
+    setCard(updateCardt)
+  }
+
+  function clearCardt() {
+    setCard([])
+  }
+
   return (
     <>
       <Header
         cart={cart}
         removeFromCart={removeFromCart}
+        increaseQuantity={increaseQuantity}
+        decreaseQuantity={decreaseQuantity}
+        clearCardt={clearCardt}
       />
       <main className="container-xl mt-5">
         <h2 className="text-center">Nuestra Colección</h2>
